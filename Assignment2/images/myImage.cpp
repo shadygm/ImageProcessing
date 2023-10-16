@@ -28,18 +28,18 @@ namespace Image {
   }
 
   void myImage::convertToGrayScale() {
-    uint8_t *temp = new uint8_t[arrSize];
+    // uint8_t *temp = new uint8_t[arrSize];
     for (size_t i = 0; i < arrSize; i += channels) {
       uint8_t gray = (img[i] + img[i + 1] + img[i + 2]) / 3;
-      temp[i] = gray;
-      temp[i + 1] = gray;
-      temp[i + 2] = gray;
+      img[i] = gray;
+      img[i + 1] = gray;
+      img[i + 2] = gray;
     }
-    uint8_t *ogStorage = img;
-    img = temp;
+    // uint8_t *ogStorage = img;
+    // img = temp;
     outputImage("image/output/grayScale.jpg");
-    img = ogStorage;
-    delete[]temp;
+    // img = ogStorage;
+    // delete[]temp;
   }
 
   int myImage::findMaxLumi() {

@@ -3,7 +3,7 @@ CXXFLAGS = -Wall -pedantic -Wextra -g -O3
 INCLUDE_DIRS = -I./stb_image -I./commands -I./images
 OUTPUT = histogram
 
-all: main.o command.o myImage.o histogram.o
+all: main.o command.o myImage.o histogram.o band.o
 	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) $^ -o $(OUTPUT)
 	./$(OUTPUT)
 
@@ -20,5 +20,8 @@ myImage.o: images/myImage.cpp
 histogram.o: histogramApply/histogram.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $<
 
-clean:
+band.o: bandTransform/band.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $<
+
+clean: 
 	rm -f $(OUTPUT) *.o

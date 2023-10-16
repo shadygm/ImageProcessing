@@ -35,6 +35,7 @@ namespace histo {
     for(; startingVal < image.arrSize; startingVal += image.channels) {
       histogram[image.img[startingVal]]++;
     }
+    
   }
 
   void applyTransformation(myImage image, uint32_t *histogram, uint8_t *histoModifiedImage, size_t startingVal) {
@@ -50,6 +51,7 @@ namespace histo {
     
     for(int i = 0; i < 256; i++) {
       cdf[i] = 255 * cdf[i] / imgSize;
+      printf("cdf[%d]: %f\n", i, cdf[i]);
     } 
 
     for(; startingVal < image.arrSize; startingVal+= image.channels) {
