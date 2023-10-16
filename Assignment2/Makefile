@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -pedantic -O3
+CXXFLAGS = -Wall -pedantic -Wextra -g -O3
 INCLUDE_DIRS = -I./stb_image -I./commands -I./images
 OUTPUT = histogram
 
