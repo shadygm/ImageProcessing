@@ -7,9 +7,9 @@ const std::string skiingPath = "image/input/skiing.jpg";
 const std::string smogPath = "image/input/smog.jpg";
 using namespace Image;
 int main () {
-  myImage image = myImage(doorPath);
+  myImage image = myImage(smogPath);
 
   image.convertToGrayScale();
-  image.outputImage("image/output/doorGrayScale.png");
+  Command::execute("histogram", image);
   image.freeImage();   
 }
