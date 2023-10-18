@@ -8,7 +8,7 @@
 
 
 #include "../images/myImage.h"
-#define BAND_PATH "image/output/band.jpg"
+#define BAND_PATH "image/output/band.png"
 using namespace Image;
 namespace band {
   void bandTransform(myImage image);
