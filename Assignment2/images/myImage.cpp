@@ -28,9 +28,10 @@ namespace Image {
   }
 
   void myImage::convertToGrayScale() {
-    // uint8_t *temp = new uint8_t[arrSize];
     for (size_t i = 0; i < arrSize; i += channels) {
-      uint8_t gray = (img[i] + img[i + 1] + img[i + 2]) / 3;
+
+      // Adding 3 uint8_t can cause overflow!
+      uint8_t gray = ((double)img[i] + (double)img[i + 1] + (double)img[i + 2]) / 3.0;
       img[i] = gray;
       img[i + 1] = gray;
       img[i + 2] = gray;

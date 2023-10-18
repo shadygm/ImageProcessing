@@ -3,19 +3,49 @@
 #include "band.h"
 #include <iostream>
 
-
 namespace band {
   void bandTransform(myImage image) {
     uint8_t *temp = new uint8_t[image.arrSize];
     memcpy(temp, image.img, image.arrSize * sizeof(uint8_t));
 
-    double *dct = new double[image.arrSize];
+    int w = image.width;
+    int h = image.height;
+    int ch = image.channels;
+    double *dct = new double[w * h];
+    auto img = image.img;
+    uint8_t *img1 = new uint8_t[w * h];
 
-    forwardDCT(image.img, image.width, image.height, dct);
+    // You have 4 channels (ch = 4), 4th channel being K (probably) and shouldn't be changed (probably)
 
-      // Process the DCT coefficients or apply any other operations as needed
+    // 3ch -> 1ch
+    {
+        int idx = 0;
+        for (int i = 0;i < w * h;i++) {
+            img1[i] = img[idx];
+            idx += ch;
+        }
+    }
 
-    inverseDCT(dct, image.width, image.height, image.img);
+    // forwardDCT(image.img, image.width, image.height, dct);
+    forwardDCT(img1, w, h, dct);
+
+    dct[0] = 0; // freq. domain filter example - set mean to 0
+
+    // Process the DCT coefficients or apply any other operations as needed
+
+    // inverseDCT(dct, image.width, image.height, image.img);
+    inverseDCT(dct, w, h, img1);
+
+    // 1ch -> 3ch
+    {
+        int idx = 0;
+        for (int i = 0;i < w * h;i++) {
+            img[idx] =
+            img[idx + 1] =
+            img[idx + 2] = img1[i];
+            idx += ch;
+        }
+    }
 
     image.outputImage(BAND_PATH);
     delete[] dct;
@@ -25,8 +55,6 @@ namespace band {
     double cu, cv, dctSum;
 
     for (int u = 0; u < height; u++) {
-      
-    // std::cout << "Running here\n";
         for (int v = 0; v < width; v++) {
             cu = (u == 0) ? 1 / sqrt(2) : 1;
             cv = (v == 0) ? 1 / sqrt(2) : 1;
@@ -40,15 +68,12 @@ namespace band {
                 }
             }
             output[u * width + v] = 0.25 * cu * cv * dctSum;
-            printf("%.3f ", (output[u * width + v]));
         }
-        printf("\n\n");
     }
 }
 
 void inverseDCT(double* input, int width, int height, uint8_t* output) {
     double cu, cv, idctSum;
-    std::cout << "Running here\n";
     for (int x = 0; x < height; x++) {
         for (int y = 0; y < width; y++) {
             idctSum = 0;
@@ -62,7 +87,8 @@ void inverseDCT(double* input, int width, int height, uint8_t* output) {
                               cos((2 * y + 1) * v * M_PI / (2 * width));
                 }
             }
-            output[x * width + y] = (unsigned char)(idctSum + 0.5);
+            double pval = (idctSum + 0.5) / ((float)width * (float)height / 16.0);
+            output[x * width + y] = (unsigned char)(std::max(0.0, std::min(255.0, pval)));
         }
     }
 }
