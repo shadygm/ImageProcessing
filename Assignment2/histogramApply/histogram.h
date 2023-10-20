@@ -6,7 +6,7 @@
 #include <iostream>
 
 #include "../images/myImage.h"
-#define HISTOGRAM_PATH "image/output/histogram.jpg"
+#define HISTOGRAM_PATH "image/output/histogram.png"
 
 using namespace Image;
 namespace histo {

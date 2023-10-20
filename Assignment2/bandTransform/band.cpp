@@ -26,14 +26,16 @@ namespace band {
         }
     }
 
-    // forwardDCT(image.img, image.width, image.height, dct);
     forwardDCT(img1, w, h, dct);
 
-    dct[0] = 0; // freq. domain filter example - set mean to 0
+    // dct[1] = 0; // freq. domain filter example - set mean to 0
+    
+    //Filters out the entire first row.
+    for(size_t i = 0; i < w; i++) {
+      dct[i] = 0;
+    }
+    // dct[w*h - 1] = 0;
 
-    // Process the DCT coefficients or apply any other operations as needed
-
-    // inverseDCT(dct, image.width, image.height, image.img);
     inverseDCT(dct, w, h, img1);
 
     // 1ch -> 3ch
