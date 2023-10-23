@@ -11,14 +11,11 @@ namespace saltPepper {
     int w = image.width;
     int h = image.height;
     int ch = image.channels;
-    double *dct = new double[w * h];
     auto img = image.img;
-    uint8_t *img1 = new uint8_t[w * h];
 
 
 
-    image.outputImage(LOW_PASS_PATH);
-    delete[] dct;
+    image.outputImage(SALT_PEPPER_PATH);
   }
 
 }

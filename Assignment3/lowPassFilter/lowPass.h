@@ -11,7 +11,7 @@
 #define LOW_PASS_PATH "image/output/low_pass.png"
 using namespace Image;
 namespace lowPass {
-  void lowPass(myImage image);
+  void lowPassFun(myImage image);
   
 }
 

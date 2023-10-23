@@ -11,8 +11,11 @@
 #define IMAGE_SHARPENING_PATH "image/output/image_sharpening.png"
 using namespace Image;
 namespace imageSharpening {
-  void sharpenImage(myImage image);
-  
+  void sharpenImage(myImage image, int kernelHeightWidth);
+  void buildGaussian(double** gaussianKernel, double sigma, int kernelDimensions);
+  void applyGaussianKernel(double** gaussianKernel, myImage image, int kernelHeightWidth, std::string path);
+  void buildLaplacianKernel(double** laplacianKernel, int kernelDimensions, double* weights);
+  void applyLaPlace(myImage image, double* window, int n);
 }
 
 #endif

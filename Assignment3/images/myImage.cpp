@@ -31,7 +31,8 @@ namespace Image {
     for (size_t i = 0; i < arrSize; i += channels) {
 
       // Adding 3 uint8_t can cause overflow!
-      uint8_t gray = ((double)img[i] + (double)img[i + 1] + (double)img[i + 2]) / 3.0;
+      double gray = ((double)img[i] + (double)img[i + 1] + (double)img[i + 2]) / 3.0;
+      gray = std::min(255.0, std::max(0.0, gray));
       img[i] = gray;
       img[i + 1] = gray;
       img[i + 2] = gray;
