@@ -15,7 +15,7 @@ namespace imageSharpening {
   void buildGaussian(double** gaussianKernel, double sigma, int kernelDimensions);
   void applyGaussianKernel(double** gaussianKernel, myImage image, int kernelHeightWidth, std::string path);
   void buildLaplacianKernel(double** laplacianKernel, int kernelDimensions, double* weights);
-  void applyLaPlace(myImage image, double* window, int n);
+  void applyLaPlace(myImage image, double window[3][3], int n);
 }
 
 #endif

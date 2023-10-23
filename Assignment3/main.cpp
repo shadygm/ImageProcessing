@@ -4,8 +4,9 @@
 
 
 const std::string astroPath = "image/input/astro.PNG";
-const std::string moonPath = "image/input/moon.PNG";
+const std::string miniMoonPath = "image/input/moon.PNG";
 const std::string saltPepperPath = "image/input/saltpepper.PNG";
+const std::string moonPath = "image/input/half-moon-closeup.jpg";
 
 using namespace Image;
 
