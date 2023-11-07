@@ -15,6 +15,8 @@ namespace Image {
     size_t arrSize;
     uint8_t *img;
 
+    myImage(uint8_t *img, int width, int height, int channels);
+
     myImage(std::string path);
 
     void outputImage(std::string path) const;
@@ -24,6 +26,8 @@ namespace Image {
     int findMaxLumi();
 
     void freeImage();
+    void print();
+    void convertToSingleChannel();
   };
 }
 

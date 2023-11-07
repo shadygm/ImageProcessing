@@ -10,15 +10,23 @@
 
 namespace Image {
 
+  myImage::myImage(uint8_t *img, int width, int height, int channels) {
+    this->img = img;
+    this->width = width;
+    this->height = height;
+    this->channels = channels;
+    this->arrSize = width * height * channels;
+    this->maxLuminosity = findMaxLumi();
+  }
   myImage::myImage(std::string path) {
     this->img = stbi_load(path.c_str(), &this->width, &this->height, &this->channels, 0);
     if(this->img == nullptr) {
       std::cerr << "Failed to load image: " << stbi_failure_reason() << std::endl;
     }
+    printf("channels loaded: %d\n", this->channels);
     this->arrSize = width * height * channels;
     this->maxLuminosity = findMaxLumi();
   }
-
 
   void myImage::outputImage(std::string path) const {
     if (!stbi_write_jpg(path.c_str(), this->width, this->height, this->channels,
@@ -28,14 +36,21 @@ namespace Image {
   }
 
   void myImage::convertToGrayScale() {
-    for (size_t i = 0; i < arrSize; i += channels) {
+    size_t i = 0;
+    for (size_t idx = 0; idx < width*height; idx ++) {
+      if(i >= arrSize) {
+        break;
+      }
 
-      // Adding 3 uint8_t can cause overflow!
-      double gray = ((double)img[i] + (double)img[i + 1] + (double)img[i + 2]) / 3.0;
+      size_t red = i;
+      size_t green = i + 1;
+      size_t blue = i + 2;
+      double gray = ((double)img[red] + (double)img[green] + (double)img[blue]) / 3.0;
       gray = std::min(255.0, std::max(0.0, gray));
-      img[i] = gray;
-      img[i + 1] = gray;
-      img[i + 2] = gray;
+      img[red] = gray;
+      img[green] = gray;
+      img[blue] = gray;
+      i += channels;
     }
     // uint8_t *ogStorage = img;
     // img = temp;
@@ -52,10 +67,37 @@ namespace Image {
     }
     return maxLumi;
   }
+
   void myImage::freeImage() {
     if(img != nullptr || img != NULL) {
       stbi_image_free(img);
     }
+  }
+  
+  void myImage::print() {
+    for(int i = 0; i < arrSize; i++) {
+      printf("%3d ", img[i]);
+      if(i % width == 0) {
+        printf("\n");
+      }
+    }
+    printf("\n");
+  }
+
+  void myImage::convertToSingleChannel() {
+    if(channels == 1) {
+      printf("Cannot convert to single channel\n");
+      return;
+    }
+
+    int idx = 0;
+    for (size_t i = 0; i < arrSize; i += channels) {
+      img[idx] = img[i];
+      idx++;
+    }
+    this->channels = 1;
+    this->arrSize = width * height;
+
   }
 }
 #endif

@@ -2,157 +2,152 @@
 #include <cmath>
 #include "imageSharpening.h"
 #include <iostream>
+#include <memory>
+
+
 
 
 using namespace std;
 namespace imageSharpening {
-  void sharpenImage(myImage image, int kernelHeightWidth) {
-    uint8_t *temp = new uint8_t[image.arrSize];
-    memcpy(temp, image.img, image.arrSize * sizeof(uint8_t));
+  void sharpenImage(myImage originalImage, int kernelHeightWidth) {
 
-    int w = image.width;
-    int h = image.height;
-    int ch = image.channels;
-    auto img = image.img;
-    
-    
-    double **gaussianKernel = new double*[kernelHeightWidth];
-    for(size_t i = 0; i < kernelHeightWidth; i++) {
-      gaussianKernel[i] = new double[kernelHeightWidth];
+    printf("OG arrSize == %d\n", originalImage.arrSize);
+    uint8_t *copyImage = new uint8_t[originalImage.arrSize];
+    memcpy(copyImage, originalImage.img, originalImage.arrSize * sizeof(uint8_t));
+    myImage copy = myImage(copyImage, originalImage.width, originalImage.height, originalImage.channels);
+
+    copy.convertToSingleChannel();
+    printf("singleChannel ArrSize == %d\n", copy.arrSize);
+
+    printf("IMAGE SHARPENING\n\n");
+    double *gaussianKernel = buildGaussianKernel(1.0, 3);
+    for(int i = 0; i < 9; i++) {
+      printf("%f ", gaussianKernel[i]);
     }
+    printf("\n");
+    myImage gaussianImage = applyKernel(&copy, gaussianKernel, 3, "gaussian");
 
-    buildGaussian(gaussianKernel, 2.1, kernelHeightWidth);
-    applyGaussianKernel(gaussianKernel, image, kernelHeightWidth, "image/output/gaussian.png");
+    gaussianImage.outputImage("image/output/gaussian.png");
+    printf("Gaussian arrSize == %d\n", gaussianImage.arrSize);
 
-    double **laplacianOfGaussian = new double*[kernelHeightWidth];
-    for(size_t i = 0; i < kernelHeightWidth; i++) {
-      laplacianOfGaussian[i] = new double[kernelHeightWidth];
-    }
+    double *laplacianKernel = buildLaplacianKernel();
+    myImage laplacianImage = applyKernel(&gaussianImage, laplacianKernel, 3, "laplacian");
+    laplacianImage.outputImage("image/output/laplacian.png");
 
-    double laplacianWeights[3][3] = {{0, 1, 0}, {1, -4, 1}, {0, 1, 0}};
-    // buildLaplacianKernel(laplacianOfGaussian, kernelHeightWidth, laplacianWeights);
+    myImage sharpenedImage = sharpenImage(&laplacianImage, &originalImage);
+    sharpenedImage.outputImage("image/output/sharpened.png");
 
-    applyLaPlace(image, laplacianWeights, kernelHeightWidth);
-
-    for(size_t i = 0; i < kernelHeightWidth; i++) {
-      delete[]gaussianKernel[i];
-      delete[]laplacianOfGaussian[i];
-    }
-    delete[]laplacianOfGaussian;
-    delete[]gaussianKernel;
-
+    delete[] gaussianKernel;
+    delete[] laplacianKernel;
+    delete[] copy.img;
+    delete[] gaussianImage.img;
+    delete[] laplacianImage.img;
+    delete[] sharpenedImage.img;
   }
 
-  
-
-  void applyGaussianKernel(double** gaussianKernel, myImage image, int kernelHeightWidth, std::string path) {
-    int w = image.width;
-    int h = image.height;
-    int ch = image.channels;
-
-    int center = kernelHeightWidth / 2;
-    auto img = image.img;
-
-    for (int y = 0; y < h; y++) {
-        for (int x = 0; x < w; x++) {
-            double r = 0.0, g = 0.0, b = 0.0;
-
-            for (int ky = -center; ky <= center; ky++) {
-                for (int kx = -center; kx <= center; kx++) {
-                    int imgY = y + ky;
-                    int imgX = x + kx;
-
-                    if (imgY >= 0 && imgY < h && imgX >= 0 && imgX < w) {
-                        double kernelValue = gaussianKernel[ky + center][kx + center];
-                        r += (double)img[imgY * w * ch + imgX * ch] * kernelValue;
-                        g += (double)img[imgY * w * ch + imgX * ch + 1] * kernelValue;
-                        b += (double)img[imgY * w * ch + imgX * ch + 2] * kernelValue;
-                    }
-                }
-            }
-
-            int baseIndex = y * w * ch + x * ch;
-            img[baseIndex] = (uint8_t)r;
-            img[baseIndex + 1] = (uint8_t)g;
-            img[baseIndex + 2] = (uint8_t)b;
-        }
-    }
-    image.outputImage(path); 
-  }
-
-
-  void buildGaussian(double** gaussianKernel, double sigma, int kernelDimensions) {
+  double* buildGaussianKernel(double sigma, int kernelDimensions) {
+    double *gaussianKernel = new double[kernelDimensions*kernelDimensions];
     double sum = 0.0;
+
     double center = floor(kernelDimensions / 2.0);
-    for (size_t y = 0; y < kernelDimensions; y++) {
-      for (size_t x = 0; x < kernelDimensions; x++) {
+    for(size_t y = 0; y < kernelDimensions; y++) {
+      for(size_t x = 0; x < kernelDimensions; x++) {
         double xDistance = x - center;
         double yDistance = y - center;
-        gaussianKernel[y][x] = exp(-(xDistance * xDistance + yDistance * yDistance) / (2.0 * sigma * sigma)) / (2.0 * M_PI * sigma * sigma);
-        sum += gaussianKernel[y][x];
+        gaussianKernel[y*kernelDimensions + x] = exp(-(xDistance * xDistance + yDistance * yDistance) 
+        / (2.0 * sigma * sigma)) / (2.0 * M_PI * sigma * sigma);
+        sum += gaussianKernel[y*kernelDimensions + x];
       }
     }
 
-    for (size_t y = 0; y < kernelDimensions; y++) {
-      for (size_t x = 0; x < kernelDimensions; x++) {
-        gaussianKernel[y][x] /= sum;
+    for(size_t y = 0; y < kernelDimensions; y++) {
+      for(size_t x = 0; x < kernelDimensions; x++) {
+        gaussianKernel[y*kernelDimensions + x] /= sum;
       }
     }
+
+    return gaussianKernel;
   }
 
-  
-  void buildLaplacianKernel(double** laplacianKernel, int kernelDimensions, double* weights) {
-      // Calculate the center position of the kernel
-      int center = (kernelDimensions) / 2;
-      int weightIndex = 0;
-
-      for (int y = 0; y < kernelDimensions; y++) {
-          for (int x = 0; x < kernelDimensions; x++) {
-              laplacianKernel[y][x] = weights[weightIndex++];
-          }
-      }
+  double* buildLaplacianKernel() {
+    //im so sorry for this
+    double *kernel = new double[9];
+    kernel[0] = -1;
+    kernel[1] = -1;
+    kernel[2] = -1;
+    kernel[3] = -1;
+    kernel[4] = 8;
+    kernel[5] = -1;
+    kernel[6] = -1;
+    kernel[7] = -1;
+    kernel[8] = -1;
+    return kernel;
   }
 
+  myImage applyKernel(myImage *in, double *kernel, int kernelHeightWidth, string typeKernel) {
+    double *copyImage = new double[in->arrSize];
+    memset(copyImage, 0, in->arrSize * sizeof(double));
 
-  void applyLaPlace(myImage image, double window[3][3], int kernelHeightWidth) {
-    int w = image.width;
-    int h = image.height;
-    int ch = image.channels;
-    double * laplacianKernel = new double[w*h];
+    int w = in->width;
+    int h = in->height;
+    int ch = in->channels;
+    size_t imgSize = in->arrSize;
     int center = kernelHeightWidth / 2;
-    uint8_t *temp = new uint8_t[image.arrSize];
-    memcpy(temp, image.img, image.arrSize * sizeof(uint8_t));
 
-    for (int y = 0; y < h; y++) {
-      for (int x = 0; x < w; x++) {
-        double r = 0.0, g = 0.0, b = 0.0;
+    for(size_t i = 1; i < h - 1; i ++) {
+      for (size_t j = 1; j < w - 1; j++) {
+        int idx = i * w + j * ch;
+        int kernelIdx = 0;
+        for(int yCenter = -center; yCenter <= center; yCenter++) {
+          for(int xCenter = -center; xCenter <= center; xCenter++) {
+            int imgY = i + yCenter;
+            int imgX = j + xCenter;
+            if(imgY >= 0 && imgY < h && imgX >= 0 && imgX < w) {
+              if (imgY * w * ch + imgX * ch >= imgSize ) {
+                continue;
+              }
 
-        for (int ky = -center; ky <= center; ky++) {
-          for (int kx = -center; kx <= center; kx++) {
-            int imgY = y + ky;
-            int imgX = x + kx;
-            if (imgY >= 0 && imgY < h && imgX >= 0 && imgX < w) {
-              double kernelValue = window[ky + center][kx + center];
-              r += (double)temp[imgY * w * ch + imgX * ch] * kernelValue;
-              g += (double)temp[imgY * w * ch + imgX * ch + 1] * kernelValue;
-              b += (double)temp[imgY * w * ch + imgX * ch + 2] * kernelValue;
+              double kernelValue = kernel[kernelIdx];
+              copyImage[idx] += (double)in->img[imgY * w * ch + imgX * ch] * kernelValue;
+              kernelIdx++;
             }
           }
         }
-
-        int baseIndex = y * w * ch + x * ch;
-        r = (r + 4 * 255)/8;
-        g = (g + 4 * 255)/8;
-        b = (b + 4 * 255)/8;
-        temp[baseIndex] = (uint8_t)r;
-        temp[baseIndex + 1] = (uint8_t)g;
-        temp[baseIndex + 2] = (uint8_t)b;
       }
     }
-    uint8_t *og = image.img;
-    image.img = temp;
-    image.outputImage("image/output/laplace.png"); // You can save the blurred image to a file
-    image.img = og;
-    delete[] temp;
+
+
+    if(!strcmp(typeKernel.c_str(), "laplacian")) {
+      printf("laplacian\n");
+      for(int i = 0; i < imgSize; i++) {
+        copyImage[i] = 2*copyImage[i];
+      }
+    }
+
+    for (size_t i = 0; i < imgSize; i++) {
+      copyImage[i] = std::min(255.0, std::max(0.0, copyImage[i]));
+    }
+
+    uint8_t *output = new uint8_t[imgSize];
+    for (int i = 0; i < imgSize; i++) {
+      output[i] = (uint8_t)copyImage[i];
+    }
+
+    free(copyImage);
+    return myImage(output, w, h, ch);
+  }
+
+  myImage sharpenImage(myImage *laplacian, myImage *original) {
+    std::unique_ptr<double[]> copyImage(new double[laplacian->arrSize]);
+
+    for(int i = 0; i < laplacian->arrSize; i++) {
+      copyImage[i] = (double)laplacian->img[i] + (double)original->img[i];
+    }
+
+    uint8_t *output = new uint8_t[laplacian->arrSize];
+    for (int i = 0; i < laplacian->arrSize; i++) {
+      output[i] = std::min(255.0 , std::max(0.0, copyImage[i]));
+    }
+    return myImage(output, laplacian->width, laplacian->height, laplacian->channels);
   }
 }
