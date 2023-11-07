@@ -28,6 +28,7 @@ namespace Image {
     void freeImage();
     void print();
     void convertToSingleChannel();
+    void convertFromSingleChannel();
   };
 }
 

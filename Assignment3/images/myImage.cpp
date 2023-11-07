@@ -37,7 +37,7 @@ namespace Image {
 
   void myImage::convertToGrayScale() {
     size_t i = 0;
-    for (size_t idx = 0; idx < width*height; idx ++) {
+    for (size_t idx = 0; idx < (size_t)width*height; idx ++) {
       if(i >= arrSize) {
         break;
       }
@@ -54,7 +54,6 @@ namespace Image {
     }
     // uint8_t *ogStorage = img;
     // img = temp;
-    outputImage("image/output/grayScale.png");
     // img = ogStorage;
     // delete[]temp;
   }
@@ -75,7 +74,7 @@ namespace Image {
   }
   
   void myImage::print() {
-    for(int i = 0; i < arrSize; i++) {
+    for(size_t i = 0; i < arrSize; i++) {
       printf("%3d ", img[i]);
       if(i % width == 0) {
         printf("\n");
@@ -98,6 +97,27 @@ namespace Image {
     this->channels = 1;
     this->arrSize = width * height;
 
+  }
+
+  void myImage::convertFromSingleChannel() {
+    if(channels != 1) {
+      printf("Cannot convert from single channel\n");
+      return;
+    }
+
+    uint8_t *temp = new uint8_t[width * height * 3];
+    int idx = 0;
+    for (size_t i = 0; i < arrSize; i++) {
+      temp[idx] = img[i];
+      temp[idx + 1] = img[i];
+      temp[idx + 2] = img[i];
+      idx += 3;
+    }
+    uint8_t *ogStorage = img;
+    this->channels = 3;
+    this->arrSize = width * height * 3;
+    this->img = temp;
+    delete[] ogStorage;
   }
 }
 #endif

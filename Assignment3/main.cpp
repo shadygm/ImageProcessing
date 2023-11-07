@@ -5,33 +5,27 @@
 
 const std::string astroPath = "image/input/astro.PNG";
 const std::string miniMoonPath = "image/input/moon.PNG";
-const std::string saltPepperPath = "image/input/saltpepper.PNG";
+const std::string saltPepperPath = "image/input/HQ_saltpepper.png";
 const std::string moonPath = "image/input/half-moon-closeup.jpg";
+const std::string galaxyPath = "image/input/galaxy.png";
 
 using namespace Image;
 
 int main () {
-  myImage image = myImage(moonPath);
-  image.outputImage("image/output/og.png");
-  // for(int i = 0; i < 27; i++) {
+  myImage image = myImage(saltPepperPath);
+
+  // for(int i = 0; i < 9; i++) {
   //   image.img[i] = 0;
   // }
-  // image.img[12] = 255;
-  // image.img[13] = 0;
-  // image.img[14] = 0;
-
-
-  // printf("original\n");
-  // for(int i = 0; i < 27; i+= 3) {
-  //   printf("%d ", image.img[i]);
-  // }
-  // printf("\n");
-
   // image.width = 3;
   // image.height = 3;
-  // image.channels = 3;
-  // image.arrSize = image.width * image.height * image.channels;
+  // image.channels = 1;
+  // image.arrSize = 9;
+  image.outputImage("image/output/og.png");
+
   image.convertToGrayScale();
-  Command::execute("sharpening", image);
+  image.outputImage("image/output/grayScale.png");
+  // Command::execute("sharpening", image);
+  Command::execute("lowpass", image);
   image.freeImage();   
 }

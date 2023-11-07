@@ -10,16 +10,12 @@
 using namespace std;
 namespace imageSharpening {
   void sharpenImage(myImage originalImage, int kernelHeightWidth) {
-
-    printf("OG arrSize == %d\n", originalImage.arrSize);
     uint8_t *copyImage = new uint8_t[originalImage.arrSize];
     memcpy(copyImage, originalImage.img, originalImage.arrSize * sizeof(uint8_t));
     myImage copy = myImage(copyImage, originalImage.width, originalImage.height, originalImage.channels);
 
     copy.convertToSingleChannel();
-    printf("singleChannel ArrSize == %d\n", copy.arrSize);
 
-    printf("IMAGE SHARPENING\n\n");
     double *gaussianKernel = buildGaussianKernel(1.0, 3);
     for(int i = 0; i < 9; i++) {
       printf("%f ", gaussianKernel[i]);
