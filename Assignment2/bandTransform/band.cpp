@@ -30,11 +30,16 @@ namespace band {
 
     // dct[1] = 0; // freq. domain filter example - set mean to 0
     
-    //Filters out the entire first row.
-    for(size_t i = 0; i < w; i++) {
-      dct[i] = 0;
+    // Filters out the entire first row.
+    //remove vertical 
+    for(int i = 0; i < h; i++) {
+        for(int j = 0; j < w; j++) {
+            if(i <= 100 && j <= 100) {
+                continue;
+            }
+            dct[i*w + j] = 0;
+        }
     }
-    // dct[w*h - 1] = 0;
 
     inverseDCT(dct, w, h, img1);
 

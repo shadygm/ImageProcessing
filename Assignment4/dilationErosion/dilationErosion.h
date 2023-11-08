@@ -7,7 +7,7 @@
 #include <iostream>
 
 #include "../images/myImage.h"
-#define DILATE_PATH "image/output/dilated.png"
+#define DILATE_PATH "image/output/modified.png"
 using namespace Image;
 using namespace std;
 namespace imDilationErosion {

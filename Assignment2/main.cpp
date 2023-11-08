@@ -16,7 +16,7 @@ using namespace Image;
 
 int main () {
   myImage image = myImage(pipperPath);
-
+  printf("Width: %d\tHeight: %d\n", image.width, image.height);
   image.convertToGrayScale();
   image.outputImage(grayScale);
   Command::execute("band", image);
