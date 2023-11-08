@@ -13,3 +13,6 @@ Image Processing assignments get a grasp of it.
 1. Using low-pass spatial filters and/or intensity transformation, detect sources (i.e. stars, galaxies and so) and generate an out image where pixels on the sources are white and the others black.
 2. Remove salt and pepper noise by using median filter.
 3. Apply image sharpening using a laplacian filter.
+
+## Assignment 4
+1. Implement dilation and erosion filter for binary images using user-defined structuring elements.
