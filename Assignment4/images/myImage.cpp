@@ -38,7 +38,7 @@ namespace Image {
   void myImage::convertToGrayScale() {
     size_t i = 0;
     for (size_t idx = 0; idx < (size_t)width*height; idx ++) {
-      if(i >= arrSize) {
+      if(i + 2>= arrSize) {
         break;
       }
 

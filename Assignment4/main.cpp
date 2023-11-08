@@ -20,6 +20,6 @@ int main() {
   image.applyThreshold(100);
   image.outputImage("image/output/grayScale.png");
   // Command::execute("sharpening", image);
-  Command::execute("dilate", image);
+  Command::execute("erode", image);
   image.freeImage();
 }

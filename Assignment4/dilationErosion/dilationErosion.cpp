@@ -6,9 +6,9 @@
 
 namespace imDilationErosion {
   void dilateErode(myImage in, bool type) {
-    uint8_t *structuringElem = createStructuringElement(3, 3);
     int width = 3;
     int height = 3;
+    uint8_t *structuringElem = createStructuringElement(width, height);
     in.convertToSingleChannel();
     myImage dilatedImage = applyStructuringElement(&in, structuringElem, width, height, type);
     dilatedImage.convertFromSingleChannel();
@@ -16,21 +16,22 @@ namespace imDilationErosion {
     delete[] dilatedImage.img;
   }
 
+
+/*
+ * Can be modified to anything. It currently just uses a completely full
+ * structuring element. 
+ */
   uint8_t *createStructuringElement(int width, int height) {
     unique_ptr<uint8_t[]> structuringElem(new uint8_t[width * height]);
     uint8_t *structuringElemPtr = structuringElem.get();
-    structuringElemPtr[0] = 0;
-    structuringElemPtr[1] = 1;
-    structuringElemPtr[2] = 0;
-    structuringElemPtr[3] = 1;
-    structuringElemPtr[4] = 1;
-    structuringElemPtr[5] = 1;
-    structuringElemPtr[6] = 0;
-    structuringElemPtr[7] = 1;
-    structuringElemPtr[8] = 0;
+    memset(structuringElemPtr, 1, width * height * sizeof(uint8_t));
     return structuringElemPtr;
   }
 
+  /*
+   * Assumes that the structuring element is of odd dimensions and that the 
+   * origin is at the center. 
+   */
   myImage applyStructuringElement(myImage *in, uint8_t *structuringElem,
                                   int widthStruct, int heightStruct,
                                   bool type) {
@@ -65,7 +66,6 @@ namespace imDilationErosion {
           temp[idx] = (count >= 1) ? 255 : 0;
         } else {
           temp[idx] = (count == neededNum) ? 255 : 0;
-          printf("Count == %d\tneededCount == %d\n", count, neededNum);
         }
       }
     }
