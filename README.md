@@ -16,3 +16,6 @@ Image Processing assignments get a grasp of it.
 
 ## Assignment 4
 1. Implement dilation and erosion filter for binary images using user-defined structuring elements.
+
+## Assignment 5
+1. Implement top-hat transform 
