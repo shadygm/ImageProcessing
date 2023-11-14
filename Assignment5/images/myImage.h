@@ -29,7 +29,7 @@ namespace Image {
     void print();
     void convertToSingleChannel();
     void convertFromSingleChannel();
-    void applyThreshold(int threshold);
+    void applyThreshold(double threshold);
   };
 }
 

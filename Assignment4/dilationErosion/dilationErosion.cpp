@@ -35,12 +35,18 @@ namespace imDilationErosion {
   myImage applyStructuringElement(myImage *in, uint8_t *structuringElem,
                                   int widthStruct, int heightStruct,
                                   bool type) {
+    if(type) {
+      printf("applying dilation\n");
+    } else {
+      printf("applying erosion\n");
+    }
+    
     int width = in->width;
     int height = in->height;
     int channels = in->channels;
     int neededNum = countNeededNum(structuringElem, widthStruct, heightStruct);
-    std::cout << "neededNum: " << neededNum << "\n";
     int center = widthStruct / 2;
+
     uint8_t *temp = new uint8_t[width * height * channels];
     myImage out(temp, width, height, channels);
     memset(temp, 0, width * channels * height * sizeof(uint8_t));

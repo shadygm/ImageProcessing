@@ -1,5 +1,6 @@
 #include "myImage.h"
 #include <iostream>
+#include <memory>
 
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -121,8 +122,11 @@ namespace Image {
     delete[] ogStorage;
   }
 
-  void myImage::applyThreshold(int threshold) {
-    for(int i = 0; i < arrSize; i++) {
+  void myImage::applyThreshold(double fraction) {
+    int maxLumi = findMaxLumi();
+    double threshold = fraction * maxLumi;
+
+    for (int i = 0; i < arrSize; i++) {
       img[i] = (img[i] > threshold) ? 255 : 0;
     }
   }

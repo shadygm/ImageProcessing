@@ -4,14 +4,13 @@
 #include <cstdint>
 #include <string>
 #include <cstring>
-#include "../dilationErosion/dilationErosion.h"
+#include "../tophat/tophat.h"
 #include "../images/myImage.h"
 
-#define DILATE_COMMAND "dilate"
-#define ERODE_COMMAND "erode"
+#define TOPHAT_COMMAND "tophat"
 
 
-using namespace imDilationErosion;
+using namespace imTophat;
 using namespace Image;
 namespace Command {
   void execute(std::string command, myImage image);

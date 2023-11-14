@@ -1,9 +1,9 @@
 CXX = g++
 CXXFLAGS = -Wall -pedantic -g -O3
 INCLUDE_DIRS = -I./stb_image -I./commands -I./images
-OUTPUT = morphology
+OUTPUT = topHat
 
-all: main.o command.o myImage.o dilationErosion.o
+all: main.o command.o myImage.o dilationErosion.o tophat.o
 	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) $^ -o $(OUTPUT)
 	./$(OUTPUT)
 
@@ -20,6 +20,8 @@ myImage.o: images/myImage.cpp
 dilationErosion.o : dilationErosion/dilationErosion.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $<
 
+tophat.o : tophat/tophat.cpp
+	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $<
 
 clean: 
 	rm -f $(OUTPUT) *.o
