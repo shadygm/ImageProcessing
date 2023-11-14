@@ -15,10 +15,10 @@ const std::string smallPath = "image/input/small.png";
 using namespace Image;
 
 int main () {
-  myImage image = myImage(pipperPath);
+  myImage image = myImage(smogPath);
   printf("Width: %d\tHeight: %d\n", image.width, image.height);
-  image.convertToGrayScale();
+  // image.convertToGrayScale();
   image.outputImage(grayScale);
-  Command::execute("band", image);
+  Command::execute("histogram", image);
   image.freeImage();   
 }
