@@ -7,16 +7,23 @@ namespace imTophat {
   void tophat(myImage input) {
     myImage closing = computeClosing(&input);
     closing.outputImage(CLOSING_PATH);
+    
+    myImage dilatedClosing = imDilationErosion::applyStructuringElement(&closing, imDilationErosion::createCircularStructuringElement(11), 11, 11, dilation);
+    dilatedClosing.outputImage("image/output/dilatedClosing.png");
+    myImage tophatDilated = subtractInputFromClosing(&input, &dilatedClosing);
+    
+    tophatDilated.outputImage(TOPHAT_PATH);
+    tophatDilated.applyThreshold(0.5);
+    tophatDilated.outputImage("image/output/tophatDilatedThreshold.png");
+    
 
     myImage tophat = subtractInputFromClosing(&input, &closing);
-    tophat.outputImage(TOPHAT_PATH);
-    tophat.applyThreshold(0.5);
-    tophat.outputImage("image/output/tophatThreshold.png");
+    tophat.applyThreshold(0 );
+    tophat.outputImage("image/output/normalTophatThreshold.png");
     
-    myImage median = medianFilter(&tophat, 3);
-    median.outputImage("image/output/tophatMedian.png");
     
     delete[] closing.img;
+    delete[] dilatedClosing.img;
   }
   myImage computeClosing(myImage *input) {
     int width = 35;

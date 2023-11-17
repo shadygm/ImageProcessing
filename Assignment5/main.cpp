@@ -16,7 +16,7 @@ const std::string TOPHAT = "tophat";
 using namespace Image;
 
 int main() {
-  myImage image = myImage(WRITING);
+  myImage image = myImage(DIFF);
   printf("width = %d, height = %d\n", image.width, image.height);
   image.outputImage("image/output/og.png");
 
